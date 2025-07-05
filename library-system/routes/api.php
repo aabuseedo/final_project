@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\BookController;
+use App\Http\Controllers\Api\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,10 +18,17 @@ use App\Http\Controllers\Api\BookController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
 
+//  مسارات عامة (بدون توكن)
+Route::post('/register', [UserController::class, 'register']);
+Route::post('/login', [UserController::class, 'login']);
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/books', [BookController::class, 'index']);
 Route::get('/books/{id}', [BookController::class, 'show']);
+
+
+//  مسارات محمية (تحتاج توكن Sanctum)
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/user', [UserController::class, 'show']);     // عرض المستخدم الحالي
+    Route::post('/logout', [UserController::class, 'logout']); // تسجيل الخروج
+});
